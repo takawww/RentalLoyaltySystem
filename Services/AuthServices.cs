@@ -2,12 +2,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Configuration;
+using Azure.Data.Tables;
 
 namespace RentalLoyaltySystem.Services;
 
 public class AuthService(
     JSRuntime js,
-    JwtSecurityTokenHandler tokenHandler) : AuthenticationStateProvider
+    JwtSecurityTokenHandler tokenHandler,
+    IConfiguration configuration,
+    AzureStorageRepository storageRepository) : AuthenticationStateProvider
 {
     private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
 
@@ -51,24 +55,47 @@ public class AuthService(
 
     public async Task<bool> LoginAsync(string username, string password)
     {
-        // Example only – replace with real backend check
-        if (username == "admin" && password == "1234")
+        try
         {
-            var identity = new ClaimsIdentity(new[]
+            // Query the users table by email (partitionKey) and password (rowKey)
+            var user = await storageRepository.GetAsync<UserEntity>("users", username, password);
+
+            if (user != null)
             {
-                new Claim(ClaimTypes.Name, username)
-            }, "FakeAuth");
+                // User found and password matches
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, user.PartitionKey),
+                    new Claim(ClaimTypes.Email, user.Email ?? "")
+                }, "AzureAuth");
 
-            _currentUser = new ClaimsPrincipal(identity);
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-            return true;
+                _currentUser = new ClaimsPrincipal(identity);
+                NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+                return true;
+            }
+
+            return false;
         }
-
-        return false;
+        catch (Exception ex)
+        {
+            // Log the exception if needed
+            System.Diagnostics.Debug.WriteLine($"Login error: {ex.Message}");
+            return false;
+        }
     }
 
     public async Task Logout()
     {
         await MarkUserAsLoggedOutAsync();
     }
+}
+
+public class UserEntity : Azure.Data.Tables.ITableEntity
+{
+    public string PartitionKey { get; set; } = string.Empty;
+    public string RowKey { get; set; } = string.Empty;
+    public DateTimeOffset? Timestamp { get; set; }
+    public Azure.ETag ETag { get; set; }
+    public string Password { get; set; } = string.Empty;
+    public string? Email { get; set; }
 }
