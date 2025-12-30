@@ -1,0 +1,61 @@
+﻿@page "/"
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Nav
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization;
+
+<div class="homeWrapper">
+    <div class="cardContainer">
+        <div class="cardBackground">
+            <div style="height: 150px; background-color: #000000"></div>
+            <div style="height: 150px; background-color: #ebebe6"></div>
+        </div>
+        <div class="cardOverlay">
+            <Card/>
+        </div>
+    </div>
+</div>
+
+
+<style>
+.homeWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+}
+
+.cardBackground {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.cardOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+</style>
+
+@code {
+    private void Logout()
+    {
+        if (AuthProvider is RentalLoyaltySystem.Services.AuthService authService)
+        {
+            authService.Logout();
+            Nav.NavigateTo("/login", forceLoad: true);
+        }
+    }
+}

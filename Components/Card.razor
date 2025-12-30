@@ -1,0 +1,44 @@
+<div class="cardWrapper gradient-card">
+    <div class="cardRow" style="flex: 1">
+        <span style="color: white; font-size: 14px">@GetGradeName()</span>
+        <div></div>
+    </div>
+    <div class="cardRow">
+        <div>
+            <span style="color: white; font-size: 24px; font-weight: bold;">@(Point)pt</span>
+            <span style="color: white; font-size: 14px">@(Point)pt 將於2026年3月12日到期</span>
+        </div>
+        <div></div>
+    </div>
+</div>
+
+
+<style>
+    .cardWrapper {
+        width: 360px;
+        height: 220px;
+        background: linear-gradient(135deg, #656e60, #AAAAAA, #656e60);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+        border-radius: 15px;
+        padding: 32px;
+    }
+
+    .cardRow {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+</style>
+
+@code {
+    [Parameter] 
+    public string CardGrade { get; set; }
+    [Parameter] 
+    public string Point { get; set; } = "46,032";
+
+    private string GetGradeName(){
+        return "一般會員";
+    }
+}

@@ -1,0 +1,32 @@
+@page "/login"
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthProvider
+@using Microsoft.AspNetCore.Components.Authorization;
+
+<h3>Login</h3>
+
+<div class="login-form">
+    <input @bind="Username" placeholder="Username" />
+    <input @bind="Password" placeholder="Password" type="password" />
+    <button @onclick="HandleLogin">Login</button>
+    <p>@Message</p>
+</div>
+
+@code {
+    private string Username;
+    private string Password;
+    private string Message;
+
+    private async Task HandleLogin()
+    {
+        if (AuthProvider is RentalLoyaltySystem.Services.AuthService authService)
+        {
+            bool success = await authService.LoginAsync(Username, Password);
+
+            if (success)
+                Nav.NavigateTo("/");
+            else
+                Message = "Invalid credentials. Try admin / 1234";
+        }
+    }
+}

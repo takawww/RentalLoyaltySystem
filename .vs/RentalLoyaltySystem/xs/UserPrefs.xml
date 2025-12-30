@@ -1,0 +1,29 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Pages/Counter.razor">
+    <Files>
+      <File FileName="Components/BottomMenu.razor" Line="1" Column="1" />
+      <File FileName="Pages/Counter.razor" Line="3" Column="8" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="RentalLoyaltySystem" expanded="True">
+            <Node name="RentalLoyaltySystem" expanded="True">
+              <Node name="Components" expanded="True" />
+              <Node name="Pages" expanded="True">
+                <Node name="Counter.razor" selected="True" />
+              </Node>
+              <Node name="wwwroot" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+</Properties>
