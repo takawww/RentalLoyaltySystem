@@ -12,11 +12,10 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+    <!-- Removed server-side package Microsoft.AspNetCore.Authentication.JwtBearer (not required for Blazor WASM client) -->
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.10" />
     <PackageReference Include="Radzen.Blazor" Version="8.1.6" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     <PackageReference Include="Azure.Data.Tables" Version="12.8.1" />

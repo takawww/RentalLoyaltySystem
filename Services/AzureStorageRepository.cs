@@ -58,7 +58,7 @@ public class AzureStorageRepository
         }
 
         var tableUri = new Uri($"https://{accountName}.table.core.windows.net");
-        var credential = new TablesSharedKeyCredential(accountName, accountKey);
+        var credential = new TableSharedKeyCredential(accountName, accountKey);
         return new TableClient(tableUri, tableName, credential);
     }
 }

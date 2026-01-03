@@ -7,26 +7,33 @@ using Azure.Data.Tables;
 
 namespace RentalLoyaltySystem.Services;
 
-public class AuthService(
-    JSRuntime js,
-    JwtSecurityTokenHandler tokenHandler,
-    IConfiguration configuration,
-    AzureStorageRepository storageRepository) : AuthenticationStateProvider
+public class AuthService : AuthenticationStateProvider
 {
+    private readonly IJSRuntime _js;
+    private readonly JwtSecurityTokenHandler _tokenHandler;
+    private readonly AzureStorageRepository _storageRepository;
+
     private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
+
+    public AuthService(IJSRuntime js, AzureStorageRepository storageRepository)
+    {
+        _js = js;
+        _tokenHandler = new JwtSecurityTokenHandler();
+        _storageRepository = storageRepository;
+    }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = await js.InvokeAsync<string>("localStorage.getItem", "authToken");
+        var token = await _js.InvokeAsync<string>("localStorage.getItem", "authToken");
 
         if (string.IsNullOrWhiteSpace(token))
             return new AuthenticationState(_currentUser);
 
-        var jwtToken = tokenHandler.ReadJwtToken(token);
+        var jwtToken = _tokenHandler.ReadJwtToken(token);
         if (jwtToken.ValidTo < DateTime.UtcNow)
         {
             // Token expired, clear it
-            await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
+            await _js.InvokeVoidAsync("localStorage.removeItem", "authToken");
             return new AuthenticationState(_currentUser);
         }
 
@@ -38,18 +45,18 @@ public class AuthService(
 
     public async Task MarkUserAsAuthenticatedAsync(string token)
     {
-        await js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+        await _js.InvokeVoidAsync("localStorage.setItem", "authToken", token);
 
-        var jwtToken = tokenHandler.ReadJwtToken(token);
+        var jwtToken = _tokenHandler.ReadJwtToken(token);
         var identity = new ClaimsIdentity(jwtToken.Claims, "jwt");
         var user = new ClaimsPrincipal(identity);
 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
     }
 
-     public async Task MarkUserAsLoggedOutAsync()
+    public async Task MarkUserAsLoggedOutAsync()
     {
-        await js.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        await _js.InvokeVoidAsync("localStorage.removeItem", "authToken");
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
     }
 
@@ -58,7 +65,7 @@ public class AuthService(
         try
         {
             // Query the users table by email (partitionKey) and password (rowKey)
-            var user = await storageRepository.GetAsync<UserEntity>("users", username, password);
+            var user = await _storageRepository.GetAsync<UserEntity>("users", username, password);
 
             if (user != null)
             {
